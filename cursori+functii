@@ -1,0 +1,649 @@
+CREATE TABLE clientii(
+    id_client NUMBER(6) PRIMARY KEY,
+    nume_client VARCHAR2(20),
+    prenume_client VARCHAR2(20),
+    adresa_client VARCHAR2(20),
+    telefon_client NUMBER(10),
+    email_client VARCHAR2(30)
+);
+
+GROUP BY id_client
+HAVING COUNT(id_comanda) >=0;
+
+
+CREATE VIEW V AS
+SELECT id_client, nume_client
+FROM clientii
+WHERE adresa_client = 'Bucuresti';
+
+SELECT NVL(nume_produs, 'Altă_valoare') FROM Produs;
+
+SELECT * 
+FROM Produs 
+WHERE pret_produs != 12;
+
+
+INSERT INTO clientii VALUES (21, 'Iulia', 'Hotescu', 'Buzau', 0771234567, 'iuliah@example.com');
+DELETE FROM clientii WHERE id_client = 2;
+
+UPDATE clientii
+SET nume_client = 'Alexandra'
+WHERE adresa_client='Buzau';
+
+INSERT INTO bucatari (id_bucatar, nume_bucatar, specialitate, experienta, id_produs)
+VALUES (13, 'Diana Lazar', 'Patiserie', 10, 2);
+
+INSERT INTO bucatari (id_bucatar, nume_bucatar, specialitate, experienta, id_produs)
+VALUES (2, 'Raluca Ion', 'Deserturi', 8, 3);
+
+Select id_client from clientii
+MINUS
+SELECT id_client from comanda;
+
+
+
+
+SELECT bs.id_bucatar_sef, bs.nume_bucatar_sef, bs.id_bucatar_subordonat, b.nume_bucatar
+FROM bucatari_sef bs
+JOIN bucatari b ON bs.id_bucatar_subordonat = b.id_bucatar
+START WITH bs.id_bucatar_subordonat = 2
+CONNECT BY PRIOR bs.id_bucatar_sef = bs.id_bucatar_subordonat;
+
+
+SELECT id_produs FROM Produs
+INTERSECT
+SELECT id_produs FROM design;
+
+Update comanda
+SET status_comanda='neplatita'
+WHERE data_comanda<TO_DATE('01-12-2023','DD-MM-YYYY');
+
+--populare tabele
+INSERT INTO clientii VALUES (1, 'Pop', 'Ion', 'Bucuresti', 771234567, 'ionpop@gmail.com');
+INSERT INTO clientii VALUES (2, 'Ionescu', 'Maria', 'Cluj-Napoca', 721234567, 'ionescu.maria@example.com');
+INSERT INTO clientii VALUES (3, 'Georgescu', 'Andrei', 'Timisoara', 731234567, 'andrei.georgescu@example.com');
+INSERT INTO clientii VALUES (4, 'Petrescu', 'Ana', 'Iasi', 741234567, 'ana.petrescu@example.com');
+INSERT INTO clientii VALUES (5, 'Dumitrescu', 'Florin', 'Brasov', 751234567, 'florin.dumitrescu@example.com');
+INSERT INTO clientii VALUES (6, 'Popa', 'Elena', 'Constanta', 761234567, 'elena.popa@example.com');
+INSERT INTO clientii VALUES (7, 'Vasilescu', 'Mihai', 'Oradea', 771234568, 'mihai.vasilescu@example.com');
+INSERT INTO clientii VALUES (8, 'Radulescu', 'Gabriel', 'Sibiu', 781234567, 'gabriel.radulescu@example.com');
+INSERT INTO clientii VALUES (9, 'Stanescu', 'Diana', 'Arad', 791234567, 'diana.stanescu@example.com');
+INSERT INTO clientii VALUES (10, 'Iliescu', 'Cristina', 'Ploiesti', 711234567, 'cristina.iliescu@example.com');
+INSERT INTO Produs VALUES (1, 'Eclair', 12, 20, 'Eclere cu ciocolata');
+INSERT INTO Produs VALUES (2, 'Tiramisu', 1
+
+CREATE TABLE bucatari_sef (
+    id_bucatar_sef NUMBER(6) PRIMARY KEY,
+    nume_bucatar_sef VARCHAR2(50),
+    id_bucatar_subordonat NUMBER(6),
+    FOREIGN KEY (id_bucatar_subordonat) REFERENCES bucatari(id_bucatar)
+);
+
+INSERT INTO bucatari_sef (id_bucatar_sef, nume_bucatar_sef, id_bucatar_subordonat)
+VALUES (1, 'Ion Ionescu', 2);
+
+ALTER TABLE client
+RENAME TO clientii;
+
+ALTER TABLE clientii
+ADD CONSTRAINT ck_tlf check(telefon_client >0);
+
+CREATE TABLE Plati(
+    id_plati NUMBER(2) PRIMARY KEY,
+    id_comanda NUMBER(4),
+    id_client NUMBER(6)
+);
+
+ALTER TABLE Plati
+ADD CONSTRAINT fk_plati_comanda FOREIGN KEY (id_comanda) REFERENCES Comanda(id_comanda);
+
+ALTER TABLE Plati
+ADD CONSTRAINT fk_plati_client FOREIGN KEY (id_client) REFERENCES clientii(id_client);
+
+CREATE TABLE Comanda(
+    id_comanda NUMBER(4) PRIMARY KEY,
+    id_client NUMBER(6),
+    data_comanda DATE,
+    status_comanda VARCHAR2(20)
+);
+
+ALTER TABLE Comanda
+ADD CONSTRAINT fk_comanda_client FOREIGN KEY (id_client) REFERENCES clientii(id_client);
+
+CREATE TABLE design (
+    id_design NUMBER(4) PRIMARY KEY,
+    id_produs NUMBER(4),
+    culoare VARCHAR2(20),
+    forma VARCHAR2(20),
+    aroma VARCHAR2(20),
+    glazura VARCHAR2(20),
+    alte_informatii VARCHAR2(30)
+);
+
+
+ALTER TABLE comanda_design
+ADD CONSTRAINT fk_design_comanda FOREIGN KEY (id_comanda) REFERENCES Comanda(id_comanda);
+
+CREATE TABLE produse_comanda(
+    id_comanda NUMBER(4) PRIMARY KEY,
+    id_produse NUMBER(12),
+    ingrediente  VARCHAR2(20)
+);
+
+CREATE TABLE Produs(
+    id_produs NUMBER(12) PRIMARY KEY,
+    nume_produs VARCHAR2(20),
+    pret_produs NUMBER(4),
+    cantitate_produs NUMBER(6),
+    descriere_produs VARCHAR2(30)
+);
+
+ALTER TABLE Produs
+ADD CONSTRAINT ck_pret check(pret_produs>0);
+
+ALTER TABLE Produs
+ADD CONSTRAINT ch_cantitate check(cantitate_produs>0); 
+
+CREATE TABLE comanda_design(
+    id_design NUMBER(4),
+    id_comanda NUMBER(4),
+    pret_ornament NUMBER(3),
+    descriere_design VARCHAR2(30)
+);
+
+ALTER TABLE comanda_design
+ADD CONSTRAINT ck_int PRIMARY KEY(id_comanda);
+
+ALTER TABLE comanda_design
+ADD CONSTRAINT pret_ck check(pret_ornament>0);
+
+CREATE TABLE bucatari(
+    id_bucatar NUMBER(6) PRIMARY KEY,
+    nume_bucatar VARCHAR2(50),
+    specialitate VARCHAR2(50),
+    experienta NUMBER(3),
+    id_produs NUMBER(12)
+);
+
+ALTER TABLE bucatari
+ADD CONSTRAINT fk_bucatari_prod FOREIGN KEY (id_produs) REFERENCES Produs(id_produs);
+
+ 
+
+
+INSERT INTO comanda VALUES (1,2,TO_DATE('2023-12-31', 'YYYY-MM-DD'),'Platita');
+
+DELETE FROM comanda
+WHERE id_comanda = 1;
+
+INSERT INTO clientii VALUES (1,'pop','ion','bucuresti',0776252112,'ionpop@gmail.com');
+ INSERT INTO clientii VALUES (2,'Hotescu','Iulia-Alexanda','Buzau',077514004,'hotescuiulia22@gmail.com');
+ INSERT INTO design_produs VALUES (12,'BLUE','LICHID','AFINE','NU','SIROP DE AFINE');
+
+
+UPDATE Produs 
+set cantitate_produs=cantitate_produs+12
+where pret_produs=21;
+
+UPDATE clientii
+set nume_client='Ionescu'
+where id_client=1;
+
+DELETE FROM clientii
+WHERE id_client=1;
+
+DELETE FROM comanda
+WHERE data_comanda<TO_DATE('01-04-2022','DD-MM-YYYY');
+ 
+ 
+ 
+
+SELECT id_produs,nume_produs
+FROM Produs
+WHERE pret_produs > 10;
+
+SELECT id_client,nume_client,adresa_client,telefon_client 
+FROM clientii 
+WHERE adresa_client LIKE '%Buzau%';
+
+SELECT * FROM Produs 
+WHERE descriere_produs IS not NULL;
+
+SELECT id_produs,nume_produs,cantitate_produs FROM Produs 
+WHERE cantitate_produs BETWEEN 1 AND 10;
+
+
+SELECT id_comanda,status_comanda FROM Comanda 
+JOIN clientii
+ON Comanda.id_client = clientii.id_client
+ORDER BY id_comanda;
+
+
+SELECT TO_CHAR(data_comanda, 'DD-Mon-YYYY') data_comanda
+FROM Comanda;
+
+SELECT EXTRACT(YEAR FROM data_comanda) an_comanda 
+FROM Comanda;
+
+SELECT SUBSTR(nume_produs, 1, 3)  nume_scurt
+FROM Produs;
+
+
+SELECT c.id_client, c.nume_client, c.prenume_client
+FROM clientii c
+WHERE EXISTS (
+    SELECT 1 
+    FROM Comanda co 
+    WHERE co.id_client = c.id_client 
+    AND co.status_comanda like '%Platita%'
+);
+
+
+SELECT * FROM Produs 
+WHERE cantitate_produs > (SELECT AVG(cantitate_produs) FROM Produs);
+
+SELECT id_produs, nume_produs, pret_produs FROM Produs WHERE pret_produs <=15
+UNION
+SELECT id_produs, nume_produs, pret_produs FROM Produs WHERE cantitate_produs > 5;
+
+
+INSERT INTO Produs VALUES (13, 'Cheesecake', 20, 15, 'Cheesecake cu fructe de padure');
+INSERT INTO Produs VALUES (4, 'Macarons', 8, 50, 'Macarons asortate');
+INSERT INTO Produs VALUES (5, 'Tort de ciocolata', 25, 5, 'Tort ciocolata cu visine');
+INSERT INTO Produs VALUES (6, 'Prajitura Amandina', 10, 30, 'Amandina clasica');
+INSERT INTO Produs VALUES (7, 'Chec de lamaie', 18, 12, 'Chec pufos cu lamaie');
+INSERT INTO Produs VALUES (8, 'Baclava', 22, 8, 'Baclava cu nuca');
+INSERT INTO Produs VALUES (9, 'Negresa', 16, 25, 'Negresa ciocolata cu nuci');
+INSERT INTO Produs VALUES (10, 'Mousse de ciocolata', 14, 18, 'Mousse fin de ciocolata');
+
+INSERT INTO bucatari VALUES (1, 'Diana Lazar', 'Patiserie', 10, 1);
+INSERT INTO bucatari VALUES (2, 'Raluca Ion', 'Deserturi', 8, 2);
+INSERT INTO bucatari VALUES (3, 'Adrian Popescu', 'Torturi', 12, 3);
+INSERT INTO bucatari VALUES (4, 'Elena Vasilescu', 'Choux a la creme', 9, 4);
+INSERT INTO bucatari VALUES (5, 'Florin Dumitru', 'Tarte', 11, 5);
+INSERT INTO bucatari VALUES (6, 'Cristina Stoica', 'Prajituri de casa', 7, 6);
+INSERT INTO bucatari VALUES (7, 'Mihai Radu', 'Glazurare', 10, 7);
+INSERT INTO bucatari VALUES (8, 'Gabriela Marinescu', 'Baclava', 6, 8);
+INSERT INTO bucatari VALUES (9, 'Andrei Munteanu', 'Ciocolaterie', 5, 9);
+INSERT INTO bucatari VALUES (10, 'Ana Rusu', 'Mousse', 8, 10);
+
+INSERT INTO bucatari_sef VALUES (1, 'Ion Ionescu', 2);
+INSERT INTO bucatari_sef VALUES (2, 'Maria Constantinescu', 3);
+INSERT INTO bucatari_sef VALUES (3, 'Andrei Popa', 4);
+INSERT INTO bucatari_sef VALUES (4, 'Florin Stan', 5);
+INSERT INTO bucatari_sef VALUES (5, 'Elena Dumitru', 6);
+INSERT INTO bucatari_sef VALUES (6, 'Mihai Georgescu', 7);
+INSERT INTO bucatari_sef VALUES (7, 'Diana Matei', 8);
+INSERT INTO bucatari_sef VALUES (8, 'Gabriel Stoian', 9);
+INSERT INTO bucatari_sef VALUES (9, 'Cristina Avram', 10);
+INSERT INTO bucatari_sef VALUES (10, 'Ana Popescu', 1);
+INSERT INTO bucatari_sef VALUES (1, 'Ion Ionescu', 2);
+INSERT INTO bucatari_sef VALUES (2, 'Maria Constantinescu', 3);
+INSERT INTO bucatari_sef VALUES (3, 'Andrei Popa', 4);
+INSERT INTO bucatari_sef VALUES (4, 'Florin Stan', 5);
+INSERT INTO bucatari_sef VALUES (5, 'Elena Dumitru', 6);
+INSERT INTO bucatari_sef VALUES (6, 'Mihai Georgescu', 7);
+INSERT INTO bucatari_sef VALUES (7, 'Diana Matei', 8);
+INSERT INTO bucatari_sef VALUES (8, 'Gabriel Stoian', 9);
+INSERT INTO bucatari_sef VALUES (9, 'Cristina Avram', 10);
+INSERT INTO bucatari_sef VALUES (10, 'Ana Popescu', 1);
+
+INSERT INTO Comanda VALUES (1, 1, TO_DATE('2023-12-31', 'YYYY-MM-DD'), 'Platita');
+INSERT INTO Comanda VALUES (2, 2, TO_DATE('2024-01-15', 'YYYY-MM-DD'), 'In curs de livrare');
+INSERT INTO Comanda VALUES (3, 3, TO_DATE('2023-11-20', 'YYYY-MM-DD'), 'Neplatita');
+INSERT INTO Comanda VALUES (4, 4, TO_DATE('2023-10-01', 'YYYY-MM-DD'), 'Platita');
+INSERT INTO Comanda VALUES (5, 5, TO_DATE('2024-02-05', 'YYYY-MM-DD'), 'Platita');
+INSERT INTO Comanda VALUES (6, 6, TO_DATE('2024-03-12', 'YYYY-MM-DD'), 'In asteptare');
+INSERT INTO Comanda VALUES (7, 7, TO_DATE('2023-12-01', 'YYYY-MM-DD'), 'Platita');
+INSERT INTO Comanda VALUES (8, 8, TO_DATE('2024-01-30', 'YYYY-MM-DD'), 'In curs de livrare');
+INSERT INTO Comanda VALUES (7, 9, TO_DATE('2023-11-10', 'YYYY-MM-DD'), 'Neplatita');
+INSERT INTO Comanda VALUES (11, 10, TO_DATE('2024-02-20', 'YYYY-MM-DD'), 'Platita');
+INSERT INTO Comanda VALUES (12, 9, TO_DATE('2023-11-11', 'YYYY-MM-DD'), 'Neplatita');
+
+INSERT INTO Plati VALUES (1, 1, 1);
+INSERT INTO Plati VALUES (2, 2, 2);
+INSERT INTO Plati VALUES (3, 4, 4);
+INSERT INTO Plati VALUES (4, 5, 5);
+INSERT INTO Plati VALUES (5, 7, 7);
+INSERT INTO Plati VALUES (6, 8, 8);
+INSERT INTO Plati VALUES (7, 10, 10);
+INSERT INTO Plati VALUES (8, 3, 3);
+INSERT INTO Plati VALUES (9, 6, 6);
+INSERT INTO Plati VALUES (10, 9, 9);
+INSERT INTO design VALUES (1, 1, 'Alb', 'Rotund', 'Vanilie', 'Ciocolata', 'Decor simplu');
+INSERT INTO design VALUES (2, 2, 'Roz', 'Patrat', 'Capsuni', 'Glazura dulce', 'Fara decor');
+INSERT INTO design VALUES (3, 3, 'Galben', 'Inima', 'Lamaie', 'Glazura lamaie', 'Cu flori comestibile');
+INSERT INTO design VALUES (4, 4, 'Verde', 'Sfera', 'Menta', 'Nu', 'Cu frisca');
+INSERT INTO design VALUES (5, 5, 'Maro', 'Cilindru', 'Ciocolata', 'Glazura amaruie', 'Decor auriu');
+INSERT INTO design VALUES (6, 6, 'Mov', 'Triunghi', 'Afine', 'Glazura transparenta', 'Nu');
+INSERT INTO design VALUES (7, 7, 'Albastru', 'Ovala', 'Nuca', 'Ciocolata alba', 'Cu perle de zahar');
+INSERT INTO design VALUES (8, 8, 'Rosu', 'Cub', 'Cirese', 'Glazura lucioasa', 'Decor cu fructe');
+INSERT INTO design VALUES (9, 9, 'Negru', 'Stea', 'Cafea', 'Nu', 'Simplu');
+INSERT INTO design VALUES (10, 10, 'Portocaliu', 'Cerc', 'Portocala', 'Glazura dulce', 'Cu felii de port');
+
+
+INSERT INTO clientii (id_client, nume_client, prenume_client, adresa_client, telefon_client, email_client)
+VALUES (1, 'Popescu', 'Ion', 'Strada Lalelelor', 7201234567, 'ion.popescu@example.com');
+
+
+INSERT INTO clientii (id_client, nume_client, prenume_client, adresa_client, telefon_client, email_client)
+VALUES (3, 'Georgescu', 'Andrei', 'Calea Victoriei', 7403456789, 'andrei.georgescu@example.com');
+
+INSERT INTO clientii (id_client, nume_client, prenume_client, adresa_client, telefon_client, email_client)
+VALUES (4, 'Dumitrescu', 'Elena', 'Strada Florilor', 7504567890, 'elena.dumitrescu@example.com');
+
+INSERT INTO clientii (id_client, nume_client, prenume_client, adresa_client, telefon_client, email_client)
+VALUES (5, 'Stoica', 'Cristian', 'Strada Primaverii', 7605678901, 'cristian.stoica@example.com');
+
+INSERT INTO clientii (id_client, nume_client, prenume_client, adresa_client, telefon_client, email_client)
+VALUES (6, 'Popa', 'Alexandra', 'Strada Zambilelor', 7706789012, 'alexandra.popa@example.com');
+
+INSERT INTO clientii (id_client, nume_client, prenume_client, adresa_client, telefon_client, email_client)
+VALUES (7, 'Marinescu', 'Daniel', 'Strada Rozelor', 7807890123, 'daniel.marinescu@example.com');
+
+INSERT INTO clientii (id_client, nume_client, prenume_client, adresa_client, telefon_client, email_client)
+VALUES (8, 'Radu', 'Gabriela', 'Aleea Parcului', 7908901234, 'gabriela.radu@example.com');
+
+INSERT INTO clientii (id_client, nume_client, prenume_client, adresa_client, telefon_client, email_client)
+VALUES (9, 'Iliescu', 'Mihai', 'Strada Universitatii', 7109012345, 'mihai.iliescu@example.com');
+
+INSERT INTO clientii (id_client, nume_client, prenume_client, adresa_client, telefon_client, email_client)
+VALUES (10, 'Nistor', 'Ana', 'Strada Crizantemelor', 7200123456, 'ana.nistor@example.com');
+--structuri de control 
+DECLARE
+    v_status_comanda VARCHAR2(20);
+BEGIN
+    SELECT status_comanda
+    INTO v_status_comanda
+    FROM Comanda
+    WHERE id_comanda = 12;
+
+    IF v_status_comanda = 'Neplatita' THEN
+        UPDATE Comanda
+        SET status_comanda = 'Platita'
+        WHERE id_comanda = 1;
+        DBMS_OUTPUT.PUT_LINE('Statusul comenzii a fost actualizat la Platita.');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Statusul comenzii nu necesită actualizare.');
+    END IF;
+END;
+
+
+
+DECLARE
+    v_id_produs Produs.id_produs%TYPE;
+    v_cantitate_produs Produs.cantitate_produs%TYPE;
+    CURSOR c_produs IS
+        SELECT id_produs, cantitate_produs
+        FROM Produs
+        WHERE cantitate_produs < 10;
+BEGIN
+    OPEN c_produs;
+    LOOP
+        FETCH c_produs INTO v_id_produs, v_cantitate_produs;
+        EXIT WHEN c_produs%NOTFOUND;
+
+        WHILE v_cantitate_produs < 10 LOOP
+            v_cantitate_produs := v_cantitate_produs + 1;
+        END LOOP;
+
+        UPDATE Produs
+        SET cantitate_produs = v_cantitate_produs
+        WHERE id_produs = v_id_produs;
+
+        DBMS_OUTPUT.PUT_LINE('Produsul cu ID ' || v_id_produs || ' a fost actualizat cu cantitate ' || v_cantitate_produs || '.');
+    END LOOP;
+    CLOSE c_produs;
+END;
+
+
+DECLARE
+    v_medie_cantitate NUMBER(10,2);
+BEGIN
+    SELECT AVG(cantitate_produs)
+    INTO v_medie_cantitate
+    FROM Produs;
+
+    DBMS_OUTPUT.PUT_LINE('Cantitatea medie a produselor este: ' || v_medie_cantitate);
+
+    FOR produs IN (SELECT id_produs, nume_produs, cantitate_produs FROM Produs) LOOP
+        IF produs.cantitate_produs > v_medie_cantitate THEN
+            DBMS_OUTPUT.PUT_LINE('Produsul ' || produs.nume_produs || ' are cantitate peste medie.');
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Produsul ' || produs.nume_produs || ' are cantitate sub medie.');
+        END IF;
+    END LOOP;
+END;
+
+
+BEGIN
+    
+    INSERT INTO clientii (id_client, nume_client, prenume_client, adresa_client, telefon_client, email_client)
+    VALUES (100, 'Test', 'Client', 'Bucuresti', 1234567890, 'test.client@example.com');
+
+    DBMS_OUTPUT.PUT_LINE('Clientul a fost inserat cu succes.');
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+        DBMS_OUTPUT.PUT_LINE('Eroare: Clientul există deja.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('A apărut o eroare neașteptată: ' || SQLERRM);
+END;
+/
+
+--cursori/exceptii
+
+DECLARE
+    CURSOR c_produse IS 
+        SELECT id_produs, cantitate_produs 
+        FROM Produs;
+    v_id_produs Produs.id_produs%TYPE;
+    v_cantitate_produs Produs.cantitate_produs%TYPE;
+BEGIN
+    OPEN c_produse;
+    LOOP
+        FETCH c_produse INTO v_id_produs, v_cantitate_produs;
+        EXIT WHEN c_produse%NOTFOUND;
+        BEGIN
+            UPDATE Produs
+            SET cantitate_produs = cantitate_produs + 5
+            WHERE id_produs = v_id_produs;
+
+            DBMS_OUTPUT.PUT_LINE('Produsul cu ID ' || v_id_produs || ' a fost actualizat.');
+        EXCEPTION
+            WHEN OTHERS THEN
+                DBMS_OUTPUT.PUT_LINE('Eroare la actualizarea produsului cu ID ' || v_id_produs || ': ' || SQLERRM);
+        END;
+    END LOOP;
+    CLOSE c_produse;
+END;
+
+
+DECLARE
+    CURSOR c_produs IS 
+        SELECT id_produs, nume_produs, pret_produs 
+        FROM Produs
+        WHERE id_produs = 10;
+    v_id_produs Produs.id_produs%TYPE;
+    v_nume_produs Produs.nume_produs%TYPE;
+    v_pret_produs Produs.pret_produs%TYPE;
+BEGIN
+    OPEN c_produs;
+    FETCH c_produs INTO v_id_produs, v_nume_produs, v_pret_produs;
+
+    IF c_produs%NOTFOUND THEN
+        RAISE NO_DATA_FOUND;
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Produs ID: ' || v_id_produs || ', Nume: ' || v_nume_produs || ', Preț: ' || v_pret_produs);
+    END IF;
+
+    CLOSE c_produs;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Produsul cu ID specificat nu a fost găsit.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('A apărut o eroare: ' || SQLERRM);
+END;
+/
+
+
+
+DECLARE
+    CURSOR c_stoc IS
+        SELECT id_produs, nume_produs, cantitate_produs
+        FROM Produs
+        WHERE cantitate_produs < 10;
+    v_id_produs Produs.id_produs%TYPE;
+    v_nume_produs Produs.nume_produs%TYPE;
+    v_cantitate_produs Produs.cantitate_produs%TYPE;
+BEGIN
+    OPEN c_stoc;
+    LOOP
+        FETCH c_stoc INTO v_id_produs, v_nume_produs, v_cantitate_produs;
+        EXIT WHEN c_stoc%NOTFOUND;
+
+        BEGIN
+            DBMS_OUTPUT.PUT_LINE('Produsul cu ID ' || v_id_produs || 
+                                 ' (' || v_nume_produs || 
+                                 ') are stoc redus: ' || v_cantitate_produs);
+        EXCEPTION
+            WHEN OTHERS THEN
+                DBMS_OUTPUT.PUT_LINE('Eroare la verificarea stocului pentru produsul cu ID ' || v_id_produs || ': ' || SQLERRM);
+        END;
+    END LOOP;
+    CLOSE c_stoc;
+END;
+/
+
+
+DECLARE
+    v_total_stoc NUMBER;
+BEGIN
+    FOR r_produs IN (SELECT id_produs, nume_produs, cantitate_produs, pret_produs 
+                     FROM Produs) LOOP
+        BEGIN
+            v_total_stoc := r_produs.cantitate_produs * r_produs.pret_produs;
+            DBMS_OUTPUT.PUT_LINE('Produs: ' || r_produs.nume_produs || 
+                                 ', ID: ' || r_produs.id_produs || 
+                                 ', Valoare totală: ' || v_total_stoc);
+        EXCEPTION
+            WHEN OTHERS THEN
+                DBMS_OUTPUT.PUT_LINE('Eroare la calcularea valorii pentru produsul cu ID ' || r_produs.id_produs || ': ' || SQLERRM);
+        END;
+    END LOOP;
+END;
+/
+
+
+--FUNCTII
+CREATE OR REPLACE FUNCTION calcul_valoare_totala(
+    p_id_produs IN Produs.id_produs%TYPE
+) RETURN NUMBER IS
+    v_valoare_totala NUMBER;
+BEGIN
+    SELECT cantitate_produs * pret_produs
+    INTO v_valoare_totala
+    FROM Produs
+    WHERE id_produs = p_id_produs;
+
+    RETURN v_valoare_totala;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN 0;
+    WHEN OTHERS THEN
+        RETURN NULL;
+END;
+/
+
+
+CREATE OR REPLACE FUNCTION este_disponibil(
+    p_id_produs IN Produs.id_produs%TYPE
+) RETURN BOOLEAN IS
+    v_cantitate NUMBER;
+BEGIN
+    SELECT cantitate_produs
+    INTO v_cantitate
+    FROM Produs
+    WHERE id_produs = p_id_produs;
+
+    RETURN v_cantitate > 0;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN FALSE;
+END;
+/
+
+CREATE OR REPLACE FUNCTION calculeaza_pret_reducere(
+    p_id_produs IN Produs.id_produs%TYPE,
+    p_reducere IN NUMBER
+) RETURN NUMBER IS
+    v_pret NUMBER;
+BEGIN
+    SELECT pret_produs
+    INTO v_pret
+    FROM Produs
+    WHERE id_produs = p_id_produs;
+
+    RETURN v_pret - (v_pret * p_reducere / 100);
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN NULL;
+END;
+/
+--proceduri
+
+CREATE OR REPLACE PROCEDURE actualizeaza_stoc(
+    p_id_produs IN Produs.id_produs%TYPE,
+    p_cantitate IN NUMBER
+) IS
+BEGIN
+    UPDATE Produs
+    SET cantitate_produs = cantitate_produs + p_cantitate
+    WHERE id_produs = p_id_produs;
+
+    DBMS_OUTPUT.PUT_LINE('Stocul a fost actualizat pentru produsul cu ID: ' || p_id_produs);
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Eroare la actualizarea stocului: ' || SQLERRM);
+END;
+/
+
+CREATE OR REPLACE PROCEDURE sterge_produs(
+    p_id_produs IN Produs.id_produs%TYPE
+) IS
+BEGIN
+    DELETE FROM Produs
+    WHERE id_produs = p_id_produs;
+
+    DBMS_OUTPUT.PUT_LINE('Produsul cu ID ' || p_id_produs || ' a fost șters.');
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Produsul cu ID ' || p_id_produs || ' nu există.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Eroare la ștergerea produsului: ' || SQLERRM);
+END;
+/
+
+CREATE OR REPLACE PROCEDURE afiseaza_detalii_produs(
+    p_id_produs IN Produs.id_produs%TYPE
+) IS
+    v_nume_produs Produs.nume_produs%TYPE;
+    v_pret_produs Produs.pret_produs%TYPE;
+    v_cantitate_produs Produs.cantitate_produs%TYPE;
+BEGIN
+    SELECT nume_produs, pret_produs, cantitate_produs
+    INTO v_nume_produs, v_pret_produs, v_cantitate_produs
+    FROM Produs
+    WHERE id_produs = p_id_produs;
+
+    DBMS_OUTPUT.PUT_LINE('Detalii produs: ');
+    DBMS_OUTPUT.PUT_LINE('Nume: ' || v_nume_produs);
+    DBMS_OUTPUT.PUT_LINE('Preț: ' || v_pret_produs);
+    DBMS_OUTPUT.PUT_LINE('Cantitate: ' || v_cantitate_produs);
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Produsul cu ID ' || p_id_produs || ' nu a fost găsit.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Eroare la afișarea detaliilor produsului: ' || SQLERRM);
+END;
+/
+
